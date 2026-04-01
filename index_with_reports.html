@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Blog</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto&display=swap");
+
+      :root{
+        --bg: #f3f4f6;
+        --panel: #ffffff;
+        --muted: #6b7280;
+        --text: #374151;
+        --accent: #2563eb;
+        --card-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        --border: #e5e7eb;
+      }
+      .dark {
+        --bg: #0b1220;
+        --panel: #071026;
+        --muted: #9aa6b2;
+        --text: #e6eef8;
+        --accent: #4f9cff;
+        --card-shadow: 0 4px 18px rgba(0,0,0,0.6);
+        --border: #122131;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; padding: 0;
+        font-family: "Roboto", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* Header */
+      header {
+        background: var(--panel);
+        position: sticky;
+        top: 0; z-index: 1000;
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1.25rem;
+        display: flex; align-items: center;
+        justify-content: space-between; gap: 1rem;
+      }
+      .brand { display:flex; align-items:center; gap:1rem; }
+      header h1 {
+        font-family: "Montserrat", sans-serif;
+        font-weight:700; font-size:28px; margin:0;
+        color: var(--text); user-select:none;
+      }
+      nav { display:flex; gap:0.5rem; align-items:center; }
+      nav button {
+        background: transparent; border: none;
+        color: var(--text); font-weight:600; font-size:0.95rem;
+        cursor: pointer; padding: 0.5rem 0.85rem; border-radius:0.6rem;
+      }
+      nav button.active {
+        background: #eef2ff; color: #3730a3;
+      }
+      .header-actions { display:flex; gap:0.5rem; align-items:center; }
+      .btn {
+        background: transparent; border: none;
+        color: var(--muted); font-weight:600; font-size:0.95rem;
+        cursor: pointer; padding:0.4rem 0.8rem; border-radius:0.6rem;
+      }
+      .btn.primary { background: var(--accent); color: #fff; }
+      .user-pill {
+        display:flex; align-items:center; gap:0.6rem;
+        background: var(--panel); padding:0.25rem 0.45rem;
+        border-radius:999px; border:1px solid var(--border);
+        color: var(--text);
+      }
+      .avatar { width:36px; height:36px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff;
+      }
+      .icon-btn { font-size:18px; padding:6px; border-radius:8px; }
+
+      /* Layout */
+      main { max-width:1100px; margin:2rem auto 4rem; padding: 0 1rem; display:flex; gap:2rem; align-items:flex-start; }
+      .content-col { flex:1; min-width:320px; }
+      .side-col { width:320px; min-width:240px; }
+
+      /* Blog list */
+      #blog-list { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1.25rem; }
+      .post-card { background:var(--panel); padding:1rem; border-radius:0.75rem; box-shadow:var(--card-shadow); cursor:pointer; color:var(--text); }
+      .post-card:hover { transform: translateY(-2px); transition: transform 0.15s ease; }
+      .post-image { width:100%; max-height:160px; object-fit:cover; border-radius:0.5rem; margin-bottom:0.6rem; }
+      .post-title { margin:0 0 0.3rem; font-family:Montserrat; font-weight:700; font-size:1.1rem; color:var(--text); }
+      .post-date { font-size:0.85rem; color:var(--muted); margin-bottom:0.6rem; }
+      .post-excerpt { font-size:1rem; line-height:1.4; color:var(--text); }
+
+      /* Full post view */
+      #post-view { background:var(--panel); padding:1.4rem; border-radius:0.75rem; box-shadow:var(--card-shadow); }
+      #post-view h2 { margin-top:0; font-family:Montserrat; font-weight:700; font-size:2rem; color:var(--text); }
+      #post-view .post-content { white-space:pre-wrap; line-height:1.7; margin-bottom:1rem; color:var(--text); font-size:1.05rem; }
+
+      /* Admin */
+      #admin-dashboard { display:none; background:var(--panel); padding:1.2rem; border-radius:0.75rem; box-shadow:var(--card-shadow); }
+
+      /* Feed */
+      #feed-section { display:none; }
+      .composer { background:var(--panel); padding:0.9rem; border-radius:0.75rem; box-shadow:var(--card-shadow); margin-bottom:1rem; color:var(--text); }
+      .composer textarea { width:100%; border:1px solid var(--border); border-radius:0.6rem; padding:0.6rem; resize:vertical; min-height:72px; font-size:1rem; color:var(--text); background:transparent; }
+      .composer .composer-row { display:flex; gap:0.6rem; align-items:center; margin-top:0.6rem; justify-content:space-between; }
+      .composer .upload-preview { display:flex; gap:0.6rem; margin-top:0.6rem; flex-wrap:wrap; }
+
+      .feed-post { background:var(--panel); border-radius:0.75rem; padding:0.95rem; box-shadow:var(--card-shadow); margin-bottom:1rem; color:var(--text); }
+      .feed-header { display:flex; gap:0.75rem; align-items:center; }
+      .feed-header h3 { margin:0; font-size:1rem; font-weight:700; color:var(--text); }
+      .feed-header p.time { margin:0; font-size:0.85rem; color:var(--muted); }
+      .feed-text { margin-top:0.6rem; font-size:1rem; color:var(--text); }
+      .feed-media { margin-top:0.6rem; display:flex; gap:0.6rem; flex-wrap:wrap; }
+      .feed-media img, .feed-media video { max-width:100%; border-radius:0.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+
+      .feed-actions { display:flex; gap:1.1rem; margin-top:0.6rem; color:var(--muted); font-weight:600; user-select:none; }
+      .feed-stats { margin-left:6px; color:var(--text); font-weight:600; }
+
+      .feed-comments { margin-top:0.75rem; border-top:1px solid rgba(78, 105, 210, 0.05); padding-top:0.6rem; }
+      .comment { margin-bottom:0.45rem; font-size:0.95rem; color:var(--text); }
+      .comment small.time { color:var(--muted); margin-left:0.5rem; font-weight:600; font-size:0.8rem; }
+
+      .comment-form { display:flex; gap:0.5rem; margin-top:0.5rem; }
+      .comment-form input { flex:1; border-radius:0.5rem; border:1px solid var(--border); padding:0.45rem 0.6rem; color:var(--text); background:transparent; }
+
+      /* Profile card */
+      .profile-card { background:var(--panel); padding:1rem; border-radius:0.75rem; box-shadow:var(--card-shadow); margin-bottom:1rem; text-align:center; color:var(--text); }
+      .big-avatar { width:72px; height:72px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#fff; margin-bottom:0.6rem; font-size:1.2rem; }
+      .profile-card h3 { margin:0.3rem 0 0.15rem; font-size:1.05rem; color:var(--text); }
+      .profile-card p.bio { color:var(--muted); margin:0; font-size:0.95rem; }
+
+      .muted { color:var(--muted); font-size:0.95rem; }
+      .hidden { display:none !important; }
+
+      @media (max-width:980px) {
+        main { padding:0 0.8rem; }
+        .side-col { display:none; }
+        header h1 { font-size:20px; }
+      }
+
+      /* small utilities */
+      img.avatar-img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+      .small-img { max-height: 160px; object-fit: cover; }
+      .mod-item { border:1px solid var(--border); border-radius:0.6rem; padding:0.75rem; margin-bottom:0.6rem; background:var(--panel); display:flex; justify-content:space-between; align-items:flex-start; gap:0.6rem; }
+      .mod-details { flex:1; }
+      .mod-actions { display:flex; gap:0.5rem; align-items:center; }
+
+      /* report modal */
+      #report-modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); z-index:3000; }
+      #report-modal .card { background:var(--panel); padding:1rem; border-radius:0.6rem; width:360px; box-shadow:var(--card-shadow); color:var(--text); }
+      #reports-list .report-item { border:1px solid var(--border); padding:0.6rem; border-radius:0.6rem; margin-bottom:0.5rem; background:var(--panel); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <h1>My Blog</h1>
+        <nav aria-label="Main navigation">
+          <button id="nav-blog" class="active" title="Blog Home">Blog</button>
+          <button id="nav-feed" title="Community Feed">Community Feed</button>
+          <button id="nav-admin" title="Admin Dashboard">Admin</button>
+        </nav>
+      </div>
+
+      <div class="header-actions">
+        <div id="auth-area">
+          <button id="open-login" class="btn">Login</button>
+          <button id="open-signup" class="btn">Sign Up</button>
+        </div>
+
+        <button id="toggle-dark" class="btn icon-btn" title="Toggle dark mode">🌙</button>
+        <button id="toggleAdminBtn" class="btn" aria-label="Toggle admin login/logout">Admin Login</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="content-col">
+        <!-- Blog Listing -->
+        <section id="blog-list-section" aria-label="Blog posts">
+          <div id="blog-list"></div>
+        </section>
+
+        <!-- Full Post View -->
+        <section id="post-view-section" style="display:none;" aria-label="Blog post content">
+          <div id="post-view">
+            <h2></h2>
+            <p class="post-date muted"></p>
+            <div class="post-content"></div>
+            <div class="post-media"></div>
+            <button id="backToListBtn" aria-label="Back to blog list" class="btn primary">Back to Blog</button>
+          </div>
+        </section>
+
+        <!-- Feed -->
+        <section id="feed-section" aria-label="Community feed">
+          <div class="composer" id="composer" aria-hidden="true" style="display:none;">
+            <textarea id="composer-text" placeholder="What's on your mind?"></textarea>
+            <div class="composer-row">
+              <div style="display:flex;gap:0.5rem;align-items:center">
+                <label style="cursor:pointer;">
+                  <input id="composer-media" type="file" accept="image/*,video/*" multiple style="display:none" />
+                  <span class="btn">Add Media</span>
+                </label>
+                <div class="upload-preview" id="composer-preview" aria-live="polite"></div>
+              </div>
+              <div>
+                <button id="btn-post" class="btn primary">Post</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="feed-container" aria-live="polite"></div>
+        </section>
+
+        <!-- Admin Dashboard -->
+        <section id="admin-dashboard" aria-label="Admin Dashboard">
+          <button id="backToHomeBtn" class="btn">Back to Blog Home</button>
+          <h2>Admin Dashboard</h2>
+
+          <div id="admin-post-list" aria-live="polite" aria-relevant="additions"></div>
+
+          <form id="post-form" enctype="multipart/form-data" aria-label="Create or Edit Blog Post">
+            <input type="hidden" id="post-id" />
+            <label for="post-title">Title</label>
+            <input type="text" id="post-title" required maxlength="100" autocomplete="off" />
+            <label for="post-content">Content</label>
+            <textarea id="post-content" required maxlength="3000" autocomplete="off"></textarea>
+            <label for="post-media">Upload Images and Videos (multiple allowed)</label>
+            <input type="file" id="post-media" accept="image/*,video/*" multiple aria-describedby="media-desc" />
+            <div class="media-preview" id="media-preview" aria-live="polite" aria-relevant="additions removals"></div>
+            <button type="submit" class="btn primary">Save Post</button>
+          </form>
+
+          <section id="change-password-section" aria-label="Change Admin Password">
+            <h3>Change Admin Password</h3>
+            <label for="current-password">Current Password</label>
+            <input type="password" id="current-password" autocomplete="current-password" />
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" autocomplete="new-password" />
+            <label for="confirm-password">Confirm New Password</label>
+            <input type="password" id="confirm-password" autocomplete="new-password" />
+            <button id="change-password-btn" class="btn primary">Change Password</button>
+          </section>
+
+          <hr style="margin:1.25rem 0;border:none;border-top:1px solid var(--border);" />
+
+          <h2>Community Feed Moderation</h2>
+          <div id="feed-moderation"></div>
+
+          <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border);" />
+
+          <h2>User Reports</h2>
+          <div id="reports-list"></div>
+        </section>
+      </div>
+
+      <aside class="side-col">
+        <div class="profile-card" id="profile-panel">
+          <div class="big-avatar" id="profile-avatar">?</div>
+          <h3 id="profile-name">Guest</h3>
+          <p class="bio muted" id="profile-bio">Not signed in</p>
+          <div style="margin-top:0.75rem;">
+            <button id="view-my-posts" class="btn">My Posts</button>
+            <button id="edit-profile" class="btn">Edit Profile</button>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h4>About</h4>
+          <p class="muted">This site is a hybrid blog + community feed. All data is stored locally in your browser via <code>localStorage</code>.</p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Auth modal -->
+    <div id="auth-modal" class="hidden" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:2000;">
+      <div style="background:var(--panel);padding:1rem;border-radius:0.75rem;max-width:420px;width:94%;box-shadow:0 8px 40px rgba(2,6,23,0.2);color:var(--text);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+          <h3 id="auth-title" style="margin:0;font-family:Montserrat">Login</h3>
+          <button id="auth-close" class="btn">✕</button>
+        </div>
+
+        <div id="login-form">
+          <label>Username</label>
+          <input id="login-username" type="text" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;margin-bottom:0.6rem;background:transparent;color:var(--text)" />
+          <label>Password</label>
+          <input id="login-password" type="password" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;margin-bottom:0.6rem;background:transparent;color:var(--text)" />
+          <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:0.4rem;">
+            <button id="goto-signup" class="btn">Sign Up</button>
+            <button id="btn-login" class="btn primary">Login</button>
+          </div>
+        </div>
+
+        <div id="signup-form" class="hidden">
+          <label>Username</label>
+          <input id="signup-username" type="text" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;margin-bottom:0.6rem;background:transparent;color:var(--text)" />
+          <label>Password</label>
+          <input id="signup-password" type="password" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;margin-bottom:0.6rem;background:transparent;color:var(--text)" />
+          <label>Profile Picture (optional)</label>
+          <input id="signup-avatar" type="file" accept="image/*" style="width:100%;margin-bottom:0.6rem" />
+          <label>Avatar Color (fallback)</label>
+          <input id="signup-color" type="color" value="#2563eb" style="width:100%;height:40px;border:1px solid var(--border);border-radius:0.5rem;margin-bottom:0.6rem;background:transparent" />
+          <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:0.4rem;">
+            <button id="goto-login" class="btn">Login</button>
+            <button id="btn-signup" class="btn primary">Create Account</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Report modal -->
+    <div id="report-modal" class="hidden" aria-hidden="true">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <strong>Report Post</strong>
+          <button id="report-close" class="btn">✕</button>
+        </div>
+        <div>
+          <label for="report-reason">Reason</label>
+          <select id="report-reason" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:0.4rem;margin-bottom:0.5rem;background:transparent;color:var(--text);">
+            <option value="Spam">Spam</option>
+            <option value="Harassment">Harassment</option>
+            <option value="Misinformation">Misinformation</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="report-details">Details (optional)</label>
+          <textarea id="report-details" style="width:100%;min-height:80px;padding:0.5rem;border:1px solid var(--border);border-radius:0.4rem;background:transparent;color:var(--text);"></textarea>
+          <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.6rem;">
+            <button id="report-cancel" class="btn">Cancel</button>
+            <button id="report-submit" class="btn primary">Submit Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+        /* Storage keys */
+        const BLOG_KEY = "my-blog-posts";
+        const ADMIN_PWD_KEY = "my-blog-admin-password";
+        const USERS_KEY = "social-users";
+        const CURRENT_USER_KEY = "social-current-user";
+        const FEED_KEY = "social-feed-posts";
+        const REPORTS_KEY = "social-reports";
+        const DARK_KEY = "site-dark-mode";
+
+        /* DOM refs */
+        const navBlogBtn = document.getElementById("nav-blog");
+        const navFeedBtn = document.getElementById("nav-feed");
+        const navAdminBtn = document.getElementById("nav-admin");
+        const blogListSection = document.getElementById("blog-list-section");
+        const postViewSection = document.getElementById("post-view-section");
+        const adminDashboard = document.getElementById("admin-dashboard");
+        const feedSection = document.getElementById("feed-section");
+
+        const blogList = document.getElementById("blog-list");
+        const postView = document.getElementById("post-view");
+        const postViewTitle = postView.querySelector("h2");
+        const postViewDate = postView.querySelector(".post-date");
+        const postViewContent = postView.querySelector(".post-content");
+        const postViewMedia = postView.querySelector(".post-media");
+        const backToListBtn = document.getElementById("backToListBtn");
+
+        const toggleAdminBtn = document.getElementById("toggleAdminBtn");
+        const adminPostList = document.getElementById("admin-post-list");
+        const postForm = document.getElementById("post-form");
+        const postIdInput = document.getElementById("post-id");
+        const postTitleInput = document.getElementById("post-title");
+        const postContentInput = document.getElementById("post-content");
+        const postMediaInput = document.getElementById("post-media");
+        const mediaPreview = document.getElementById("media-preview");
+        const backToHomeBtn = document.getElementById("backToHomeBtn");
+        const changePwdBtn = document.getElementById("change-password-btn");
+        const currentPwdInput = document.getElementById("current-password");
+        const newPwdInput = document.getElementById("new-password");
+        const confirmPwdInput = document.getElementById("confirm-password");
+
+        const composer = document.getElementById("composer");
+        const composerText = document.getElementById("composer-text");
+        const composerMediaInput = document.getElementById("composer-media");
+        const composerPreview = document.getElementById("composer-preview");
+        const btnPost = document.getElementById("btn-post");
+        const feedContainer = document.getElementById("feed-container");
+
+        const authModal = document.getElementById("auth-modal");
+        const openLoginBtn = document.getElementById("open-login");
+        const openSignupBtn = document.getElementById("open-signup");
+        const authCloseBtn = document.getElementById("auth-close");
+        const loginForm = document.getElementById("login-form");
+        const signupForm = document.getElementById("signup-form");
+        const authTitle = document.getElementById("auth-title");
+        const btnLogin = document.getElementById("btn-login");
+        const btnSignup = document.getElementById("btn-signup");
+        const gotoSignup = document.getElementById("goto-signup");
+        const gotoLogin = document.getElementById("goto-login");
+
+        const loginUsername = document.getElementById("login-username");
+        const loginPassword = document.getElementById("login-password");
+        const signupUsername = document.getElementById("signup-username");
+        const signupPassword = document.getElementById("signup-password");
+        const signupColor = document.getElementById("signup-color");
+        const signupAvatarInput = document.getElementById("signup-avatar");
+
+        const authArea = document.getElementById("auth-area");
+
+        const profileAvatar = document.getElementById("profile-avatar");
+        const profileNameEl = document.getElementById("profile-name");
+        const profileBioEl = document.getElementById("profile-bio");
+        const viewMyPostsBtn = document.getElementById("view-my-posts");
+        const editProfileBtn = document.getElementById("edit-profile");
+
+        const toggleDarkBtn = document.getElementById("toggle-dark");
+        const feedModerationDiv = document.getElementById("feed-moderation");
+        const reportsListDiv = document.getElementById("reports-list");
+
+        /* report modal refs */
+        const reportModal = document.getElementById("report-modal");
+        const reportClose = document.getElementById("report-close");
+        const reportCancel = document.getElementById("report-cancel");
+        const reportSubmit = document.getElementById("report-submit");
+        const reportReason = document.getElementById("report-reason");
+        const reportDetails = document.getElementById("report-details");
+
+        /* State */
+        let currentMediaArray = [];
+        let composerMediaArray = [];
+        let signupAvatarData = null;
+        let isAdmin = false; // updated on admin login
+        let reportTarget = null; // { postId, postUser }
+
+        /* Helpers */
+        function getJSON(key, defaultVal) {
+          const raw = localStorage.getItem(key);
+          if (!raw) return defaultVal;
+          try { return JSON.parse(raw); } catch { return defaultVal; }
+        }
+        function setJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+        /* Reports storage helpers */
+        function getReports() { return getJSON(REPORTS_KEY, []); }
+        function saveReports(arr) { setJSON(REPORTS_KEY, arr); }
+        function addReport(obj) {
+          const r = getReports();
+          // prevent duplicate report by same user on same post
+          if (r.some(x => x.postId === obj.postId && x.reportedBy === obj.reportedBy && !x.resolved)) return false;
+          r.push(obj); saveReports(r); return true;
+        }
+        function resolveReport(id) {
+          const r = getReports().map(x => x.id === id ? {...x, resolved:true} : x);
+          saveReports(r);
+        }
+        function autoResolveReportsForPost(postId) {
+          const r = getReports().map(x => x.postId === postId ? {...x, resolved:true} : x);
+          saveReports(r);
+        }
+        function autoResolveReportsForUser(username) {
+          const r = getReports().map(x => x.postUser === username ? {...x, resolved:true} : x);
+          saveReports(r);
+        }
+
+        /* Admin blog functions kept & adapted */
+        function initAdminPassword() {
+          if (!localStorage.getItem(ADMIN_PWD_KEY)) localStorage.setItem(ADMIN_PWD_KEY, "admin123");
+        }
+        function getAdminPassword() { return localStorage.getItem(ADMIN_PWD_KEY); }
+        function setAdminPassword(newPassword) { localStorage.setItem(ADMIN_PWD_KEY, newPassword); }
+
+        function getPosts() { return getJSON(BLOG_KEY, []); }
+        function savePosts(posts) { setJSON(BLOG_KEY, posts); }
+
+        function formatDate(dateStr) {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+        }
+        function timeAgo(dateStr) {
+          const d = new Date(dateStr);
+          const diff = Date.now() - d.getTime();
+          const sec = Math.floor(diff / 1000);
+          if (sec < 60) return sec + "s";
+          const min = Math.floor(sec / 60);
+          if (min < 60) return min + "m";
+          const hr = Math.floor(min / 60);
+          if (hr < 48) return hr + "h";
+          return formatDate(dateStr);
+        }
+        function sanitizeText(text) { const div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+        function getFirstImage(post) {
+          if (post.media) for (const m of post.media) if (m.type.startsWith("image")) return m.data;
+          return null;
+        }
+
+        function renderBlogList() {
+          const posts = getPosts();
+          blogList.innerHTML = "";
+          if (!posts || posts.length === 0) { blogList.innerHTML = "<p>No posts published yet.</p>"; return; }
+          posts.sort((a,b)=> new Date(b.date) - new Date(a.date)).forEach(post => {
+            const card = document.createElement("div"); card.className = "post-card"; card.tabIndex = 0;
+            const firstImageUrl = getFirstImage(post);
+            let imgHtml = ""; if (firstImageUrl) imgHtml = `<img src="${firstImageUrl}" alt="Post thumbnail" class="post-image" loading="lazy" />`;
+            let excerpt = sanitizeText(post.content).substring(0,140); if (post.content.length > 140) excerpt += "...";
+            card.innerHTML = `${imgHtml}<h3 class="post-title">${sanitizeText(post.title)}</h3><div class="post-date">${formatDate(post.date)}</div><div class="post-excerpt">${excerpt}</div>`;
+            card.addEventListener("click", ()=> openPost(post.id));
+            blogList.appendChild(card);
+          });
+        }
+
+        function openPost(id) {
+          const posts = getPosts();
+          const post = posts.find(p => p.id === id);
+          if (!post) return;
+          postViewTitle.textContent = post.title;
+          postViewDate.textContent = formatDate(post.date);
+          postViewContent.textContent = post.content;
+          postViewMedia.innerHTML = "";
+          if (post.media && post.media.length > 0) {
+            post.media.forEach(m => {
+              if (m.type.startsWith("image")) {
+                const img = document.createElement("img"); img.src = m.data; img.alt = post.title + " image"; img.loading = "lazy"; img.className = "small-img";
+                postViewMedia.appendChild(img);
+              } else if (m.type.startsWith("video")) {
+                const video = document.createElement("video"); video.src = m.data; video.controls = true; video.preload = "metadata";
+                postViewMedia.appendChild(video);
+              }
+            });
+          }
+          hideAllSections(); postViewSection.style.display = "block";
+        }
+
+        backToListBtn.addEventListener("click", ()=> {
+          postViewSection.style.display = "none";
+          if (navFeedBtn.classList.contains("active")) { feedSection.style.display = "block"; renderFeed(); }
+          else blogListSection.style.display = "block";
+        });
+
+        /* Admin rendering */
+        function renderAdminPostList() {
+          const posts = getPosts();
+          adminPostList.innerHTML = "";
+          if (!posts || posts.length === 0) { adminPostList.innerHTML = "<p>No blog posts found. Start by adding a new post below.</p>"; return; }
+          posts.sort((a,b)=> new Date(b.date) - new Date(a.date)).forEach(post => {
+            const adminPostEl = document.createElement("div"); adminPostEl.className = "admin-post";
+            adminPostEl.innerHTML = `<div class="admin-post-title">${sanitizeText(post.title)}</div><div class="admin-post-date">${formatDate(post.date)}</div><div class="admin-btns"><button class="edit-btn">✏️</button><button class="delete-btn">🗑️</button></div>`;
+            adminPostEl.querySelector(".edit-btn").addEventListener("click", ()=> fillFormForEdit(post));
+            adminPostEl.querySelector(".delete-btn").addEventListener("click", ()=> deletePost(post.id));
+            adminPostList.appendChild(adminPostEl);
+          });
+        }
+
+        function fillFormForEdit(post) {
+          postIdInput.value = post.id;
+          postTitleInput.value = post.title;
+          postContentInput.value = post.content;
+          currentMediaArray = post.media ? [...post.media] : [];
+          renderMediaPreview();
+          postTitleInput.focus();
+        }
+
+        function deletePost(id) {
+          if (!confirm("Are you sure you want to delete this post?")) return;
+          let posts = getPosts(); posts = posts.filter(p => p.id !== id); savePosts(posts);
+          renderAdminPostList(); renderBlogList();
+          postForm.reset(); postIdInput.value = ""; currentMediaArray = []; renderMediaPreview();
+        }
+
+        function renderMediaPreview() {
+          mediaPreview.innerHTML = "";
+          currentMediaArray.forEach((m, idx) => {
+            const wrapper = document.createElement("div"); wrapper.className = "media-preview-item";
+            let mediaElem;
+            if (m.type.startsWith("image")) { mediaElem = document.createElement("img"); mediaElem.src = m.data; mediaElem.alt = "Preview Image " + (idx+1); mediaElem.title = "Preview Image"; }
+            else { mediaElem = document.createElement("video"); mediaElem.src = m.data; mediaElem.controls = false; mediaElem.muted = true; mediaElem.title = "Preview Video"; }
+            wrapper.appendChild(mediaElem);
+            const removeBtn = document.createElement("button"); removeBtn.type = "button"; removeBtn.textContent = "×"; removeBtn.title = "Remove this media";
+            removeBtn.addEventListener("click", ()=> { currentMediaArray.splice(idx,1); renderMediaPreview(); });
+            wrapper.appendChild(removeBtn);
+            mediaPreview.appendChild(wrapper);
+          });
+        }
+
+        function fileToBase64(file) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = () => { reader.abort(); reject(new Error("Failed to read file.")); };
+            reader.onload = () => { resolve({ type: file.type, data: reader.result }); };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        postMediaInput.addEventListener("change", async (e) => {
+          const files = Array.from(e.target.files); if (!files.length) return;
+          let estimatedSize = 0; files.forEach(f => estimatedSize += f.size);
+          if (estimatedSize > 6 * 1024 * 1024) { if (!confirm("You are uploading large files and it may affect performance or exceed storage limits. Continue?")) { postMediaInput.value = ""; return; } }
+          for (const file of files) {
+            try { const mediaObj = await fileToBase64(file); currentMediaArray.push(mediaObj); } catch (err) { alert("Error reading file: " + file.name); }
+          }
+          renderMediaPreview(); postMediaInput.value = "";
+        });
+
+        postForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const title = postTitleInput.value.trim(); const content = postContentInput.value.trim();
+          if (!title || !content) { alert("Title and content cannot be empty."); return; }
+          const posts = getPosts(); const existingId = postIdInput.value;
+          if (existingId) {
+            const index = posts.findIndex(p => p.id === existingId);
+            if (index === -1) { alert("Post not found."); return; }
+            posts[index].title = title; posts[index].content = content; posts[index].date = new Date().toISOString(); posts[index].media = currentMediaArray;
+          } else {
+            const newPost = { id: "post_" + Date.now() + "_" + Math.floor(Math.random()*1000), title, content, date: new Date().toISOString(), media: currentMediaArray };
+            posts.push(newPost);
+          }
+          savePosts(posts); renderAdminPostList(); renderBlogList();
+          postForm.reset(); postIdInput.value = ""; currentMediaArray = []; renderMediaPreview(); alert("Post saved successfully!");
+        });
+
+        changePwdBtn.addEventListener("click", ()=> {
+          const currentPwd = currentPwdInput.value; const newPwd = newPwdInput.value; const confirmPwd = confirmPwdInput.value;
+          if (!currentPwd||!newPwd||!confirmPwd) { alert("Please fill all password fields."); return; }
+          if (currentPwd !== getAdminPassword()) { alert("Current password is incorrect."); return; }
+          if (newPwd !== confirmPwd) { alert("New passwords do not match."); return; }
+          if (newPwd.length < 4) { alert("New password should be at least 4 characters."); return; }
+          setAdminPassword(newPwd); alert("Password changed successfully! Please use the new password on next login."); currentPwdInput.value=""; newPwdInput.value=""; confirmPwdInput.value="";
+        });
+
+        /* Admin login/logout */
+        toggleAdminBtn.addEventListener("click", ()=> {
+          if (!isAdmin) {
+            const pwd = prompt("Enter admin password:");
+            if (pwd === getAdminPassword()) {
+              isAdmin = true; toggleAdminBtn.textContent = "Logout Admin";
+              hideAllSections(); adminDashboard.style.display = "block"; renderAdminPostList(); renderFeedModeration(); renderReports();
+            } else alert("Incorrect password!");
+          } else {
+            isAdmin = false; toggleAdminBtn.textContent = "Admin Login"; adminDashboard.style.display = "none"; blogListSection.style.display = "block";
+          }
+        });
+
+        initAdminPassword(); renderBlogList();
+
+        /* ---------------------------
+           Social/user system with avatar upload
+           --------------------------- */
+        function getUsers() { return getJSON(USERS_KEY, []); }
+        function saveUsers(users) { setJSON(USERS_KEY, users); }
+        function getCurrentUser() { return localStorage.getItem(CURRENT_USER_KEY); }
+        function setCurrentUser(username) { if (!username) localStorage.removeItem(CURRENT_USER_KEY); else localStorage.setItem(CURRENT_USER_KEY, username); }
+
+        function getFeedPosts() { return getJSON(FEED_KEY, []); }
+        function saveFeedPosts(posts) { setJSON(FEED_KEY, posts); }
+
+        function randomColor() {
+          const colors = ["#ef4444","#f97316","#f59e0b","#84cc16","#10b981","#06b6d4","#3b82f6","#6366f1","#a78bfa","#ec4899"];
+          return colors[Math.floor(Math.random()*colors.length)];
+        }
+
+        signupAvatarInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) { signupAvatarData = null; return; }
+          if (file.size > 2 * 1024 * 1024) {
+            if (!confirm("Profile picture is larger than 2MB — continue?")) { signupAvatarInput.value = ""; signupAvatarData = null; return; }
+          }
+          const reader = new FileReader();
+          reader.onload = () => { signupAvatarData = reader.result; };
+          reader.readAsDataURL(file);
+        });
+
+        function signupUser(username, password, avatarColor, avatarData) {
+          username = username.trim();
+          if (!username || !password) return { ok:false, msg:"Username and password required." };
+          const users = getUsers();
+          if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) return { ok:false, msg:"Username already exists." };
+          users.push({ username, password, avatarColor: avatarColor || randomColor(), avatar: avatarData || null });
+          saveUsers(users);
+          return { ok:true };
+        }
+        function loginUser(username, password) {
+          const users = getUsers();
+          const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+          if (!user || user.password !== password) return { ok:false, msg:"Invalid credentials." };
+          setCurrentUser(user.username);
+          return { ok:true, user };
+        }
+        function logoutUser() { setCurrentUser(null); updateAuthUI(); }
+
+        /* Render avatar helper */
+        function renderAvatar(userObj, size=40) {
+          if (!userObj) {
+            const fallback = document.createElement("div"); fallback.className = "avatar"; fallback.style.background = "#9ca3af"; fallback.style.width = size+"px"; fallback.style.height = size+"px"; fallback.textContent = "?"; return fallback;
+          }
+          if (userObj.avatar) {
+            const wrap = document.createElement("div"); wrap.style.width = size+"px"; wrap.style.height = size+"px";
+            const img = document.createElement("img"); img.src = userObj.avatar; img.alt = userObj.username + " avatar"; img.className = "avatar-img"; img.style.width = size+"px"; img.style.height = size+"px"; wrap.appendChild(img); return wrap;
+          } else {
+            const el = document.createElement("div"); el.className = "avatar"; el.style.background = userObj.avatarColor || randomColor(); el.style.width = size+"px"; el.style.height = size+"px"; el.textContent = userObj.username.charAt(0).toUpperCase(); return el;
+          }
+        }
+
+        function updateAuthUI() {
+          const cu = getCurrentUser();
+          authArea.innerHTML = "";
+          if (cu) {
+            const users = getUsers();
+            const u = users.find(x => x.username === cu) || { avatarColor:"#2563eb" };
+            const pill = document.createElement("div"); pill.className = "user-pill";
+            const avatarEl = renderAvatar(u,32);
+            pill.appendChild(avatarEl);
+            const nameDiv = document.createElement("div"); nameDiv.style.fontWeight = "700"; nameDiv.textContent = u.username; pill.appendChild(nameDiv);
+            const logoutBtn = document.createElement("button"); logoutBtn.id = "btn-logout"; logoutBtn.className = "btn"; logoutBtn.textContent = "Logout"; logoutBtn.addEventListener("click", ()=> { logoutUser(); });
+            pill.appendChild(logoutBtn);
+            authArea.appendChild(pill);
+            composer.style.display = ""; composer.setAttribute("aria-hidden","false");
+            updateProfilePanel();
+          } else {
+            authArea.innerHTML = `<button id="open-login" class="btn">Login</button><button id="open-signup" class="btn">Sign Up</button>`;
+            document.getElementById("open-login").addEventListener("click", ()=> showAuth("login"));
+            document.getElementById("open-signup").addEventListener("click", ()=> showAuth("signup"));
+            composer.style.display = "none"; composer.setAttribute("aria-hidden","true");
+            profileAvatar.textContent = "?"; profileAvatar.style.background = "#9ca3af"; profileNameEl.textContent = "Guest"; profileBioEl.textContent = "Not signed in";
+          }
+        }
+
+        function updateProfilePanel() {
+          const cu = getCurrentUser(); if (!cu) return;
+          const users = getUsers(); const u = users.find(x => x.username === cu);
+          if (!u) return;
+          if (u.avatar) { profileAvatar.innerHTML = `<img src="${u.avatar}" alt="${u.username}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`; profileAvatar.style.background = "none"; }
+          else { profileAvatar.textContent = u.username.charAt(0).toUpperCase(); profileAvatar.style.background = u.avatarColor || randomColor(); }
+          profileNameEl.textContent = u.username; profileBioEl.textContent = "Member since " + new Date().toLocaleDateString();
+        }
+
+        function showAuth(mode) {
+          authModal.classList.remove("hidden");
+          if (mode === "login") { authTitle.textContent = "Login"; loginForm.style.display = ""; signupForm.style.display = "none"; }
+          else { authTitle.textContent = "Create Account"; loginForm.style.display = "none"; signupForm.style.display = ""; }
+        }
+        openLoginBtn.addEventListener("click", ()=> showAuth("login"));
+        openSignupBtn.addEventListener("click", ()=> showAuth("signup"));
+        authCloseBtn.addEventListener("click", ()=> authModal.classList.add("hidden"));
+        gotoSignup.addEventListener("click", ()=> showAuth("signup"));
+        gotoLogin.addEventListener("click", ()=> showAuth("login"));
+
+        btnLogin.addEventListener("click", ()=> {
+          const un = loginUsername.value.trim(); const pw = loginPassword.value;
+          if (!un || !pw) return alert("Enter username and password.");
+          const res = loginUser(un, pw);
+          if (!res.ok) return alert(res.msg);
+          authModal.classList.add("hidden"); loginUsername.value = ""; loginPassword.value = ""; updateAuthUI();
+          if (navFeedBtn.classList.contains("active")) showFeed();
+        });
+
+        btnSignup.addEventListener("click", async ()=> {
+          const un = signupUsername.value.trim(); const pw = signupPassword.value; const color = signupColor.value;
+          const avatar = signupAvatarData || null;
+          if (!un || !pw) return alert("Enter username and password.");
+          const res = signupUser(un, pw, color, avatar);
+          if (!res.ok) return alert(res.msg);
+          setCurrentUser(un); authModal.classList.add("hidden"); signupUsername.value = ""; signupPassword.value = ""; signupAvatarInput.value = ""; signupAvatarData = null; updateAuthUI();
+          if (navFeedBtn.classList.contains("active")) showFeed();
+        });
+
+        /* Feed functions */
+        function createFeedPost(content, mediaArray) {
+          const user = getCurrentUser(); if (!user) return { ok:false, msg:"Not signed in." };
+          const posts = getFeedPosts();
+          const newPost = { id: "fpost_" + Date.now() + "_" + Math.floor(Math.random()*1000), user, content, media: mediaArray || [], likes: [], comments: [], date: new Date().toISOString() };
+          posts.push(newPost); saveFeedPosts(posts); return { ok:true, post:newPost };
+        }
+
+        function toggleLike(postId) {
+          const user = getCurrentUser(); if (!user) return alert("Please login to like posts.");
+          const posts = getFeedPosts(); const p = posts.find(x => x.id === postId); if (!p) return;
+          const idx = p.likes.indexOf(user); if (idx === -1) p.likes.push(user); else p.likes.splice(idx,1); saveFeedPosts(posts); renderFeed();
+        }
+
+        function addComment(postId, text) {
+          const user = getCurrentUser(); if (!user) { alert("Please login to comment."); return; }
+          const posts = getFeedPosts(); const p = posts.find(x => x.id === postId); if (!p) return;
+          p.comments.push({ user, text, date: new Date().toISOString() }); saveFeedPosts(posts); renderFeed();
+        }
+
+        function deleteFeedPost(postId) {
+          const user = getCurrentUser();
+          // admins can delete any; users can delete own
+          let posts = getFeedPosts();
+          const p = posts.find(x => x.id === postId);
+          if (!p) return;
+          if (!isAdmin && (!user || p.user !== user)) return alert("You can only delete your own posts.");
+          posts = posts.filter(x => x.id !== postId); saveFeedPosts(posts); renderFeed(); renderFeedModeration(); autoResolveReportsForPost(postId);
+        }
+
+        function banUser(username) {
+          if (!confirm(`Ban user "${username}" and remove all their posts?`)) return;
+          let users = getUsers().filter(u => u.username !== username);
+          saveUsers(users);
+          let posts = getFeedPosts().filter(p => p.user !== username);
+          saveFeedPosts(posts);
+          // if banned user is currently logged in, log them out
+          if (getCurrentUser() === username) setCurrentUser(null);
+          updateAuthUI(); renderFeed(); renderFeedModeration(); autoResolveReportsForUser(username);
+          alert(`User "${username}" has been banned.`);
+        }
+
+        function removeComment(postId, index) {
+          const posts = getFeedPosts();
+          const p = posts.find(x => x.id === postId);
+          if (!p) return;
+          if (index < 0 || index >= p.comments.length) return;
+          p.comments.splice(index,1);
+          saveFeedPosts(posts);
+          renderFeed();
+          renderFeedModeration();
+        }
+
+        function buildFeedCard(post) {
+          const cu = getCurrentUser(); const users = getUsers();
+          const author = users.find(u => u.username === post.user) || { avatarColor: randomColor(), avatar:null, username:post.user };
+          const el = document.createElement("div"); el.className = "feed-post";
+
+          // header
+          const header = document.createElement("div"); header.className = "feed-header";
+          const avWrap = renderAvatar(author,44);
+          avWrap.style.marginRight = "6px";
+          const meta = document.createElement("div");
+          const name = document.createElement("h3"); name.textContent = post.user;
+          const time = document.createElement("p"); time.className = "time muted"; time.textContent = timeAgo(post.date);
+          meta.appendChild(name); meta.appendChild(time);
+          header.appendChild(avWrap); header.appendChild(meta);
+          el.appendChild(header);
+
+          // text
+          if (post.content && post.content.trim().length > 0) {
+            const ptext = document.createElement("p"); ptext.className = "feed-text"; ptext.textContent = post.content; el.appendChild(ptext);
+          }
+
+          // media
+          if (post.media && post.media.length > 0) {
+            const mediaWrap = document.createElement("div"); mediaWrap.className = "feed-media";
+            post.media.forEach(m => {
+              if (m.type.startsWith("image")) {
+                const img = document.createElement("img"); img.src = m.data; img.alt="post image"; img.style.maxHeight = "420px"; mediaWrap.appendChild(img);
+              } else if (m.type.startsWith("video")) {
+                const v = document.createElement("video"); v.src = m.data; v.controls = true; v.preload = "metadata"; mediaWrap.appendChild(v);
+              }
+            });
+            el.appendChild(mediaWrap);
+          }
+
+          // actions
+          const actions = document.createElement("div"); actions.className = "feed-actions";
+          const likeBtn = document.createElement("div"); likeBtn.style.cursor = "pointer"; likeBtn.textContent = (post.likes.includes(cu) ? "❤️ Liked" : "🤍 Like"); likeBtn.addEventListener("click", ()=> toggleLike(post.id));
+          const likeCount = document.createElement("span"); likeCount.className = "feed-stats"; likeCount.textContent = post.likes.length;
+          const commentBtn = document.createElement("div"); commentBtn.style.cursor = "pointer"; commentBtn.textContent = "💬 Comment"; commentBtn.addEventListener("click", ()=> { const cf = el.querySelector(".comment-input"); if (cf) cf.focus(); });
+          actions.appendChild(likeBtn); actions.appendChild(likeCount); actions.appendChild(commentBtn);
+
+          // report button (logged-in, not admin, not owner)
+          if (cu && !isAdmin && cu !== post.user) {
+            const reportBtn = document.createElement("div"); reportBtn.style.cursor = "pointer"; reportBtn.style.color = "#f59e0b"; reportBtn.textContent = "⚠️ Report";
+            reportBtn.addEventListener("click", ()=> openReportModal(post.id, post.user));
+            actions.appendChild(reportBtn);
+          }
+
+          // delete if owner or admin
+          if (cu && (cu === post.user || isAdmin)) {
+            const delBtn = document.createElement("div"); delBtn.style.cursor="pointer"; delBtn.style.color="#dc2626"; delBtn.textContent = "🗑️ Delete";
+            delBtn.addEventListener("click", ()=> { if (confirm("Delete this post?")) deleteFeedPost(post.id); });
+            actions.appendChild(delBtn);
+          }
+
+          // admin ban button
+          if (isAdmin && post.user) {
+            const banBtn = document.createElement("div"); banBtn.style.cursor="pointer"; banBtn.style.color="#b91c1c"; banBtn.textContent = "🚫 Ban";
+            banBtn.addEventListener("click", ()=> { if (confirm(`Ban user "${post.user}"?`)) banUser(post.user); });
+            actions.appendChild(banBtn);
+          }
+
+          el.appendChild(actions);
+
+          // comments
+          const commentsWrap = document.createElement("div"); commentsWrap.className = "feed-comments";
+          post.comments.forEach((c, idx) => {
+            const cdiv = document.createElement("div"); cdiv.className = "comment";
+            cdiv.innerHTML = `<strong>${sanitizeText(c.user)}:</strong> ${sanitizeText(c.text)} <small class="time">${timeAgo(c.date)}</small>`;
+            // admin remove comment button
+            if (isAdmin) {
+              const rm = document.createElement("button"); rm.className = "btn"; rm.textContent = "Remove"; rm.style.marginLeft = "8px"; rm.addEventListener("click", ()=> {
+                if (confirm("Remove this comment?")) removeComment(post.id, idx);
+              });
+              cdiv.appendChild(rm);
+            }
+            commentsWrap.appendChild(cdiv);
+          });
+          el.appendChild(commentsWrap);
+
+          // comment form
+          const cform = document.createElement("div"); cform.className = "comment-form";
+          const cinput = document.createElement("input"); cinput.className = "comment-input"; cinput.placeholder = "Write a comment...";
+          const cbtn = document.createElement("button"); cbtn.className = "btn"; cbtn.textContent = "Post";
+          cbtn.addEventListener("click", ()=> { const txt = cinput.value.trim(); if (!txt) return; addComment(post.id, txt); });
+          cform.appendChild(cinput); cform.appendChild(cbtn);
+          el.appendChild(cform);
+
+          return el;
+        }
+
+        function renderFeed() {
+          const posts = getFeedPosts(); feedContainer.innerHTML = "";
+          if (!posts || posts.length === 0) { feedContainer.innerHTML = "<p class='muted'>No posts yet — be the first to post!</p>"; return; }
+          posts.sort((a,b)=> new Date(b.date) - new Date(a.date)).forEach(p => feedContainer.appendChild(buildFeedCard(p)));
+        }
+
+        /* Composer media handling */
+        composerMediaInput.addEventListener("change", async (e) => {
+          const files = Array.from(e.target.files); if (!files.length) return;
+          let estimatedSize = 0; files.forEach(f => estimatedSize += f.size);
+          if (estimatedSize > 6*1024*1024) { if (!confirm("Large files may affect performance. Continue?")) { composerMediaInput.value=""; return; } }
+          for (const file of files) {
+            try { const obj = await fileToBase64(file); composerMediaArray.push(obj); } catch (err) { alert("Error reading file: " + file.name); }
+          }
+          renderComposerPreview(); composerMediaInput.value = "";
+        });
+
+        function renderComposerPreview() {
+          composerPreview.innerHTML = "";
+          composerMediaArray.forEach((m, idx) => {
+            const wrap = document.createElement("div");
+            if (m.type.startsWith("image")) { const img = document.createElement("img"); img.src = m.data; img.alt = "preview"; img.style.maxHeight="90px"; wrap.appendChild(img); }
+            else { const v = document.createElement("video"); v.src = m.data; v.controls = true; v.style.maxHeight="90px"; wrap.appendChild(v); }
+            const rem = document.createElement("button"); rem.type="button"; rem.className="btn"; rem.textContent="×"; rem.style.marginLeft="6px";
+            rem.addEventListener("click", ()=> { composerMediaArray.splice(idx,1); renderComposerPreview(); });
+            wrap.appendChild(rem); composerPreview.appendChild(wrap);
+          });
+        }
+
+        btnPost.addEventListener("click", ()=> {
+          const content = composerText.value.trim(); if (!content && composerMediaArray.length === 0) return alert("Write something or add media.");
+          const res = createFeedPost(content, composerMediaArray);
+          if (!res.ok) { alert(res.msg); return; }
+          composerText.value = ""; composerMediaArray = []; renderComposerPreview(); renderFeed();
+        });
+
+        /* Profile actions */
+        viewMyPostsBtn.addEventListener("click", ()=> {
+          const cu = getCurrentUser(); if (!cu) return alert("Sign in to view your posts.");
+          hideAllSections(); feedSection.style.display = "block";
+          feedContainer.innerHTML = "";
+          const posts = getFeedPosts().filter(p => p.user === cu).sort((a,b)=> new Date(b.date)-new Date(a.date));
+          if (!posts.length) { feedContainer.innerHTML = "<p class='muted'>You have not posted yet.</p>"; return; }
+          posts.forEach(p => feedContainer.appendChild(buildFeedCard(p)));
+        });
+
+        editProfileBtn.addEventListener("click", async ()=> {
+          const cu = getCurrentUser(); if (!cu) return alert("Sign in to edit profile.");
+          const users = getUsers(); const u = users.find(x=>x.username===cu);
+          const newName = prompt("Change display name (username):", u.username);
+          if (!newName) return;
+          if (newName !== u.username && users.some(x => x.username.toLowerCase() === newName.toLowerCase())) { return alert("Name taken."); }
+          const newAvatarFile = await new Promise((resolve) => {
+            const input = document.createElement("input"); input.type = "file"; input.accept = "image/*";
+            input.onchange = () => {
+              const file = input.files[0]; if (!file) return resolve(null);
+              const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file);
+            };
+            input.click();
+          });
+          u.username = newName; if (newAvatarFile) u.avatar = newAvatarFile;
+          saveUsers(users);
+          const feed = getFeedPosts().map(p => p.user === cu ? {...p, user: newName } : p);
+          saveFeedPosts(feed);
+          setCurrentUser(newName); updateAuthUI(); renderFeed(); alert("Profile updated.");
+        });
+
+        /* Moderation panel rendering */
+        function renderFeedModeration() {
+          const posts = getFeedPosts();
+          feedModerationDiv.innerHTML = "";
+          if (!posts || posts.length === 0) { feedModerationDiv.innerHTML = "<p class='muted'>No community posts yet.</p>"; return; }
+          posts.sort((a,b)=> new Date(b.date)-new Date(a.date)).forEach(post => {
+            const wrap = document.createElement("div"); wrap.className = "mod-item";
+            const details = document.createElement("div"); details.className = "mod-details";
+            const title = document.createElement("div"); title.innerHTML = `<strong>${sanitizeText(post.user)}</strong> <small class="muted"> • ${formatDate(post.date)}</small>`;
+            const preview = document.createElement("div"); preview.style.marginTop = "0.4rem"; preview.innerHTML = `<div style="color:var(--text)">${sanitizeText(post.content).slice(0,200)}${post.content.length>200?"...":""}</div>`;
+            const counts = document.createElement("div"); counts.style.marginTop = "0.5rem"; counts.innerHTML = `<span class="muted">Likes: ${post.likes.length}</span> • <span class="muted">Comments: ${post.comments.length}</span>`;
+            // show report count
+            const reports = getReports().filter(r=>r.postId===post.id && !r.resolved).length;
+            if (reports > 0) counts.innerHTML += ` • <span style="color:#f59e0b">${reports} report(s)</span>`;
+            details.appendChild(title); details.appendChild(preview); details.appendChild(counts);
+            const actions = document.createElement("div"); actions.className = "mod-actions";
+            const viewBtn = document.createElement("button"); viewBtn.className = "btn"; viewBtn.textContent = "View";
+            const delBtn = document.createElement("button"); delBtn.className = "btn"; delBtn.textContent = "Delete";
+            const banBtn = document.createElement("button"); banBtn.className = "btn"; banBtn.textContent = "Ban User";
+            const viewCommentsBtn = document.createElement("button"); viewCommentsBtn.className = "btn"; viewCommentsBtn.textContent = "View Comments";
+            actions.appendChild(viewBtn); actions.appendChild(delBtn); actions.appendChild(banBtn); actions.appendChild(viewCommentsBtn);
+            wrap.appendChild(details); wrap.appendChild(actions);
+            feedModerationDiv.appendChild(wrap);
+
+            viewBtn.addEventListener("click", ()=> {
+              // show full post in alert (simple)
+              let txt = `Post by ${post.user}\n\n${post.content}\n\nComments:\n`;
+              if (!post.comments.length) txt += "(no comments)";
+              else post.comments.forEach(c => { txt += `${c.user}: ${c.text} (${timeAgo(c.date)})\n`; });
+              alert(txt);
+            });
+
+            delBtn.addEventListener("click", ()=> {
+              if (!confirm("Delete this community post?")) return;
+              let ps = getFeedPosts().filter(p => p.id !== post.id);
+              saveFeedPosts(ps);
+              renderFeedModeration(); renderFeed(); autoResolveReportsForPost(post.id);
+            });
+
+            banBtn.addEventListener("click", ()=> {
+              if (!confirm(`Ban user "${post.user}" and remove all their posts?`)) return;
+              let users = getUsers().filter(u => u.username !== post.user);
+              saveUsers(users);
+              let ps = getFeedPosts().filter(p => p.user !== post.user);
+              saveFeedPosts(ps);
+              renderFeedModeration(); renderFeed(); updateAuthUI(); autoResolveReportsForUser(post.user);
+              alert(`User "${post.user}" banned and removed.`);
+            });
+
+            viewCommentsBtn.addEventListener("click", ()=> {
+              if (!post.comments.length) { alert("No comments"); return; }
+              // present comments and allow admin to delete individually
+              const list = post.comments.map((c, idx) => `${idx+1}. ${c.user}: ${c.text}`).join("\n");
+              const idxText = prompt(`Comments:\n${list}\n\nEnter comment number to delete or Cancel:`);
+              const idx = parseInt(idxText,10);
+              if (!isNaN(idx) && idx >= 1 && idx <= post.comments.length) {
+                if (confirm("Delete this comment?")) {
+                  const psAll = getFeedPosts();
+                  const target = psAll.find(p => p.id === post.id);
+                  if (!target) return alert("Post not found.");
+                  target.comments.splice(idx-1,1);
+                  saveFeedPosts(psAll);
+                  renderFeedModeration(); renderFeed();
+                  alert("Comment removed.");
+                }
+              }
+            });
+          });
+          // render reports too
+          renderReports();
+        }
+
+        /* Reports rendering */
+        function renderReports() {
+          const reports = getReports().sort((a,b)=> new Date(b.date) - new Date(a.date));
+          reportsListDiv.innerHTML = "";
+          if (!reports || reports.length === 0) { reportsListDiv.innerHTML = "<p class='muted'>No reports yet.</p>"; return; }
+          reports.forEach(r => {
+            const item = document.createElement("div"); item.className = "report-item";
+            const resolvedMark = r.resolved ? " (resolved)" : "";
+            item.innerHTML = `<div><strong>${sanitizeText(r.reportedBy)}</strong> reported <strong>${sanitizeText(r.postUser)}</strong>${resolvedMark}</div>
+                              <div style="margin-top:0.35rem;color:var(--text)"><em>${sanitizeText(r.reason)}</em></div>
+                              ${r.details ? `<div style="margin-top:0.35rem">${sanitizeText(r.details)}</div>` : ""}
+                              <div style="margin-top:0.5rem;color:var(--muted);font-size:0.9rem">${formatDate(r.date)}</div>
+                              <div style="margin-top:0.5rem;display:flex;gap:0.4rem;">
+                                <button class="btn" data-view="${r.postId}">View Post</button>
+                                <button class="btn" data-delete="${r.postId}">Delete Post</button>
+                                <button class="btn" data-ban="${sanitizeText(r.postUser)}">Ban User</button>
+                                ${r.resolved ? '' : `<button class="btn primary" data-resolve="${r.id}">Mark Resolved</button>`}
+                              </div>`;
+            reportsListDiv.appendChild(item);
+
+            // bind events on buttons inside item
+            item.querySelectorAll("[data-resolve]").forEach(btn=>{
+              btn.addEventListener("click", ()=> { resolveReport(btn.getAttribute("data-resolve")); renderReports(); renderFeedModeration(); });
+            });
+            item.querySelectorAll("[data-delete]").forEach(btn=>{
+              btn.addEventListener("click", ()=> {
+                const pid = btn.getAttribute("data-delete");
+                if (!confirm("Delete the reported post?")) return;
+                const ps = getFeedPosts().filter(p=>p.id !== pid); saveFeedPosts(ps);
+                autoResolveReportsForPost(pid); renderReports(); renderFeedModeration(); renderFeed();
+              });
+            });
+            item.querySelectorAll("[data-ban]").forEach(btn=>{
+              btn.addEventListener("click", ()=> {
+                const uname = btn.getAttribute("data-ban");
+                if (!confirm(`Ban user "${uname}"?`)) return;
+                banUser(uname);
+                renderReports(); renderFeedModeration(); renderFeed();
+              });
+            });
+            item.querySelectorAll("[data-view]").forEach(btn=>{
+              btn.addEventListener("click", ()=> {
+                const pid = btn.getAttribute("data-view");
+                const p = getFeedPosts().find(x=>x.id===pid);
+                if (!p) return alert("Post not found.");
+                let txt = `Post by ${p.user}\n\n${p.content}\n\nComments:\n`;
+                if (!p.comments.length) txt += "(no comments)"; else p.comments.forEach(c => { txt += `${c.user}: ${c.text}\n`; });
+                alert(txt);
+              });
+            });
+          });
+        }
+
+        /* Navigation */
+        function hideAllSections() { blogListSection.style.display="none"; postViewSection.style.display="none"; adminDashboard.style.display="none"; feedSection.style.display="none"; }
+        function clearActiveNav() { navBlogBtn.classList.remove("active"); navFeedBtn.classList.remove("active"); navAdminBtn.classList.remove("active"); }
+
+        navBlogBtn.addEventListener("click", ()=> { clearActiveNav(); navBlogBtn.classList.add("active"); hideAllSections(); blogListSection.style.display="block"; });
+        navFeedBtn.addEventListener("click", ()=> { clearActiveNav(); navFeedBtn.classList.add("active"); showFeed(); });
+        navAdminBtn.addEventListener("click", ()=> { clearActiveNav(); navAdminBtn.classList.add("active"); hideAllSections(); adminDashboard.style.display="block"; renderAdminPostList(); renderFeedModeration(); });
+
+        function showFeed() { hideAllSections(); feedSection.style.display="block"; renderFeed(); const cu = getCurrentUser(); if (cu) { composer.style.display=""; composer.setAttribute("aria-hidden","false"); } else { composer.style.display="none"; composer.setAttribute("aria-hidden","true"); } }
+
+        /* Auth UI initial */
+        updateAuthUI();
+
+        /* Seed sample feed/posts/users if empty (non-destructive: only when empty) */
+        if (getFeedPosts().length === 0) {
+          const seedUsers = [{username:"Alex",password:"pass",avatarColor:"#3b82f6"},{username:"Bree",password:"pass",avatarColor:"#ef4444"}];
+          if (!getUsers().length) { saveUsers(seedUsers); }
+          const seed = [
+            { id:"fpost_sample1", user:"Alex", content:"Welcome to the Community Feed! Feel free to post, like, and comment. 🎉", media:[], likes:[], comments:[], date:new Date().toISOString() },
+            { id:"fpost_sample2", user:"Bree", content:"This is a sample post with an image.", media:[], likes:[], comments:[], date:new Date(Date.now()-1000*60*60).toISOString() }
+          ];
+          if (getFeedPosts().length === 0) saveFeedPosts(seed);
+        }
+
+        /* Dark mode toggle */
+        function initDarkMode() {
+          const pref = localStorage.getItem(DARK_KEY);
+          const isDark = pref === "1" || (pref === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          setDarkMode(isDark);
+        }
+        function setDarkMode(enabled) {
+          if (enabled) { document.documentElement.classList.add("dark"); toggleDarkBtn.textContent = "☀️"; localStorage.setItem(DARK_KEY, "1"); }
+          else { document.documentElement.classList.remove("dark"); toggleDarkBtn.textContent = "🌙"; localStorage.setItem(DARK_KEY, "0"); }
+        }
+        toggleDarkBtn.addEventListener("click", ()=> { const isDark = document.documentElement.classList.contains("dark"); setDarkMode(!isDark); });
+        initDarkMode();
+
+        /* Initialize default view: blog */
+        hideAllSections(); blogListSection.style.display = "block";
+
+        /* Utility: convert signup avatar input to variable */
+        signupAvatarInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0]; if (!file) { signupAvatarData = null; return; }
+          if (file.size > 2*1024*1024) { if (!confirm("Profile picture is larger than 2MB — continue?")) { signupAvatarInput.value = ""; signupAvatarData = null; return; } }
+          const reader = new FileReader(); reader.onload = () => { signupAvatarData = reader.result; }; reader.readAsDataURL(file);
+        });
+
+        /* ---------------------------
+           Report modal handling
+           --------------------------- */
+        function openReportModal(postId, postUser) {
+          const cu = getCurrentUser();
+          if (!cu) return alert("Please sign in to report posts.");
+          reportTarget = { postId, postUser, reportedBy: cu };
+          reportReason.value = "Spam";
+          reportDetails.value = "";
+          reportModal.classList.remove("hidden");
+          reportModal.setAttribute("aria-hidden","false");
+        }
+        function closeReportModal() {
+          reportTarget = null;
+          reportModal.classList.add("hidden");
+          reportModal.setAttribute("aria-hidden","true");
+        }
+        reportClose.addEventListener("click", closeReportModal);
+        reportCancel.addEventListener("click", closeReportModal);
+
+        reportSubmit.addEventListener("click", ()=> {
+          if (!reportTarget) return;
+          const reason = reportReason.value || "Other";
+          const details = reportDetails.value.trim();
+          const id = "rep_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+          const obj = { id, postId: reportTarget.postId, postUser: reportTarget.postUser, reportedBy: reportTarget.reportedBy, reason, details, date: new Date().toISOString(), resolved:false };
+          const ok = addReport(obj);
+          if (!ok) { alert("You have already reported this post."); closeReportModal(); return; }
+          alert("Report submitted. Admin will review it shortly.");
+          closeReportModal();
+          // update moderation view if admin
+          renderFeedModeration();
+        });
+
+      })();
+    </script>
+  </body>
+</html>

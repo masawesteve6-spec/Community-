@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CasinoSite - Spin & Win</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: #121212;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    background: #1e1e1e;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #7de4ff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(0,255,255,0.15);
+  }
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1b2735 0%, #090a0f 100%);
+  }
+  .container {
+    background: #20232a;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,255,255,0.2);
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem;
+    color: #cbd5e1;
+  }
+  h2 {
+    margin-top: 0;
+    text-align: center;
+    color: #7de4ff;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+  form {
+    max-width: 400px;
+    margin: 0 auto 2rem auto;
+  }
+  label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: #82d1ff;
+    letter-spacing: 1px;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+    outline-offset: 2px;
+    outline-color: #7de4ff;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #121212;
+    background: #00c2ff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    letter-spacing: 2px;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,194,255,0.6);
+  }
+  button:hover {
+    background: #06b0ff;
+  }
+  .switch-link {
+    text-align: center;
+    margin-top: 1rem;
+    color: #82d1ff;
+    cursor: pointer;
+    user-select: none;
+  }
+  .switch-link:hover {
+    text-decoration: underline;
+  }
+  .error-message {
+    background: #ff3b3b;
+    color: white;
+    border-radius: 6px;
+    padding: 0.7rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Dashboards */
+  .dashboard {
+    display: none;
+    color: #cbd5e1;
+  }
+  .dashboard.active {
+    display: block;
+  }
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .dashboard-header h3 {
+    margin: 0;
+    color: #7de4ff;
+    letter-spacing: 2px;
+  }
+  .dashboard-header button {
+    background: #ff0066;
+    color: white;
+    width: auto;
+    padding: 0.5rem 1rem;
+    letter-spacing: 1px;
+  }
+  .dashboard-header button:hover {
+    background: #ff0051;
+  }
+  .coins-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #00ffe7;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .action-buttons button {
+    width: 130px;
+    background: #00b894;
+  }
+  .action-buttons button:hover {
+    background: #019875;
+  }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+  }
+  #wheel {
+    border-radius: 50%;
+    border: 8px solid #00c2ff;
+    width: 280px;
+    height: 280px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px #00c2ffaa inset;
+  }
+  .segment {
+    font-weight: 700;
+    font-size: 1.1rem;
+    fill: #121212;
+  }
+  #spinBtn {
+    margin-top: 1rem;
+    background: #7de4ff;
+    color: #121212;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    padding: 0.8rem;
+    cursor: pointer;
+    width: 120px;
+    border: none;
+    box-shadow: 0 2px 10px #7de4ffaa;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  #spinBtn:disabled {
+    background: #444a55;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  #spinBtn:hover:not(:disabled) {
+    background: #53cfff;
+  }
+  .pointer {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 24px solid #00c2ff;
+    filter: drop-shadow(0 0 4px #00c2ffaa);
+    z-index: 10;
+  }
+  .result-message {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #00ffe7;
+    min-height: 1.5rem;
+  }
+  /* Admin dashboard */
+  .admin-panel {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    background: #121212;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th,
+  td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #222831;
+    text-align: center;
+    color: #82d1ff;
+    font-weight: 600;
+  }
+  th {
+    background: #0d1925;
+  }
+  input.table-edit {
+    width: 90%;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #00c2ff;
+    background: #121212;
+    color: #eee;
+  }
+  button.admin-action-btn {
+    background: #ff0051;
+    color: #fff;
+    padding: 0.4rem 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.8px;
+    transition: background 0.25s ease;
+  }
+  button.admin-action-btn:hover {
+    background: #d4003f;
+  }
+  .admin-section-header {
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.25rem;
+    color: #7de4ff;
+    letter-spacing: 1.3px;
+  }
+  .admin-wheel-edit {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .wheel-segment-input {
+    width: 100px;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #00c2ff;
+    background: #121212;
+    color: #eee;
+    text-align: center;
+  }
+  .save-wheel-btn {
+    display: block;
+    margin: 1rem auto 0 auto;
+    width: 140px;
+    background: #00b894;
+  }
+  .save-wheel-btn:hover {
+    background: #019875;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container {
+      padding: 1rem;
+    }
+    .admin-wheel-edit {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+</head>
+<body>
+<header>CasinoSite</header>
+<main>
+  <div class="container">
+
+    <!-- Registration / Login -->
+    <div id="auth-section">
+      <h2>Welcome to CasinoSite</h2>
+      <form id="register-form" style="display:none;">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" required placeholder="you@example.com" />
+        <label for="reg-username">Username</label>
+        <input type="text" id="reg-username" required placeholder="Your username" />
+        <label for="reg-phone">Phone Number</label>
+        <input type="tel" id="reg-phone" required placeholder="07XXXXXXXX" pattern="07[0-9]{8}" />
+        <label for="reg-password">Password</label>
+        <input type="password" id="reg-password" required minlength="6" placeholder="Create password" />
+        <button type="submit">Register</button>
+      </form>
+
+      <form id="login-form">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" required placeholder="Your username" />
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required placeholder="Your password" />
+        <button type="submit">Login</button>
+      </form>
+      <div class="switch-link" id="switch-to-register">Don't have an account? Register here</div>
+      <div class="switch-link" id="switch-to-login" style="display:none;">Already have an account? Login here</div>
+      <div class="error-message" id="auth-error" style="display:none;"></div>
+    </div>
+
+    <!-- User Dashboard -->
+    <section id="user-dashboard" class="dashboard" aria-live="polite">
+      <div class="dashboard-header">
+        <h3>User Dashboard</h3>
+        <button id="user-logout-btn" title="Logout">Logout</button>
+      </div>
+      <div class="coins-display">Coins: <span id="coins-count">0</span></div>
+      <div class="action-buttons">
+        <button id="deposit-btn" title="Deposit coins">Deposit Coins</button>
+        <button id="withdraw-btn" title="Withdraw coins">Withdraw Coins</button>
+      </div>
+      <div class="spinner-container">
+        <div id="wheel-container" style="position:relative;">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheel" width="280" height="280" aria-label="Spinning wheel"></canvas>
+          <button id="spinBtn" title="Spin the wheel">Spin</button>
+        </div>
+      </div>
+      <div class="result-message" id="spin-result" aria-live="polite"></div>
+    </section>
+
+    <!-- Admin Dashboard -->
+    <section id="admin-dashboard" class="dashboard" aria-live="polite">
+      <div class="dashboard-header">
+       <h3>Admin Dashboard</h3>
+        <button id="admin-logout-btn" title="Logout">Logout</button>
+      </div>
+
+      <div class="admin-section">
+        <h4 class="admin-section-header">Manage Users</h4>
+        <table id="users-table" aria-label="Users management table">
+          <thead>
+            <tr><th>Email</th><th>Username</th><th>Phone Number</th><th>Coins</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <!-- Filled dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-section">
+        <h4 class="admin-section-header">Manage Spinning Wheel</h4>
+        <div class="admin-wheel-edit" id="wheel-edit-container">
+          <!-- Wheel segment inputs generated here -->
+        </div>
+        <button class="save-wheel-btn" id="save-wheel-btn">Save Wheel</button>
+      </div>
+
+      <div class="admin-section">
+        <h4 class="admin-section-header">Centralized M-Pesa Number</h4>
+        <p>This number is used internally to store all money data for users and is never shown to users: <strong>CasinoSite</strong></p>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<script>
+  // App Constants
+  const STORAGE_MASTER_NUMBER = "0768167553"; // Internal storage key for money data
+  const STORAGE_USERS_PREFIX = "casino_users_"; // prefix for user data keys
+  const CENTRALIZED_NAME = "CasinoSite";
+
+  // Initial Wheel Segments (can be modified by admin)
+  // Each segment: {label: string, coins: integer (reward, can be 0 or negative)}
+  let wheelSegments = [
+    { label: "100 Coins", coins: 100 },
+    { label: "50 Coins", coins: 50 },
+    { label: "20 Coins", coins: 20 },
+    { label: "10 Coins", coins: 10 },
+    { label: "5 Coins", coins: 5 },
+    { label: "2 Coins", coins: 2 },
+    { label: "0 Coins", coins: 0 },
+    { label: "-50 Coins", coins: -50 }
+  ];
+
+  // Admin credentials (simple for this app)
+  const adminUser = {
+    username: "admin",
+    password: "admin123"
+  };
+
+  // Current logged in
+  let currentUser = null;
+  let isAdmin = false;
+
+  // Utility Functions for Storage
+  function saveUser(user) {
+    localStorage.setItem(STORAGE_USERS_PREFIX + user.username, JSON.stringify(user));
+  }
+  function loadUser(username) {
+    const data = localStorage.getItem(STORAGE_USERS_PREFIX + username);
+    if (data) return JSON.parse(data);
+    return null;
+  }
+  function deleteUser(username) {
+    localStorage.removeItem(STORAGE_USERS_PREFIX + username);
+  }
+  function getAllUsers() {
+    let users = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(STORAGE_USERS_PREFIX)) {
+        users.push(JSON.parse(localStorage.getItem(key)));
+      }
+    }
+    return users;
+  }
+
+  // Centralized money data to simulate transfers to 0768167553
+  // Stored as { userCoinsTotals: { username: coins } }
+  // We treat it as internal ledger - all moves eventually update this.
+  function loadMoneyData() {
+    const data = localStorage.getItem(STORAGE_MASTER_NUMBER);
+    if (data) return JSON.parse(data);
+    else return {userCoinsTotals: {}};
+  }
+  function saveMoneyData(data) {
+    localStorage.setItem(STORAGE_MASTER_NUMBER, JSON.stringify(data));
+  }
+
+  // Sync user coins with centralized money data
+  // Called on login or after coin changes
+  function syncUserCoinsWithMoneyData(user) {
+    let moneyData = loadMoneyData();
+    moneyData.userCoinsTotals[user.username] = user.coins;
+    saveMoneyData(moneyData);
+  }
+  // When user withdraws, coins are deducted and transferred internally to centralized number
+  function internalTransferToCentralized(user, amount) {
+    // amount can be positive or negative in terms of coins user gains/loses
+    let moneyData = loadMoneyData();
+    let currentTotal = moneyData.userCoinsTotals[user.username] || 0;
+    let newTotal = currentTotal + amount;
+    if (newTotal < 0) newTotal = 0; // no negative coins allowed
+    moneyData.userCoinsTotals[user.username] = newTotal;
+    saveMoneyData(moneyData);
+    return newTotal;
+  }
+
+  // Password hashing for a simple hash (not secure, just to obfuscate)
+  function simpleHash(password) {
+    let hash = 0, i, chr;
+    if (password.length === 0) return hash;
+    for (i = 0; i < password.length; i++) {
+      chr = password.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0;
+    }
+    return hash.toString();
+  }
+
+  // Elements references
+  const authSection = document.getElementById('auth-section');
+  const registerForm = document.getElementById('register-form');
+  const loginForm = document.getElementById('login-form');
+  const switchToRegisterLink = document.getElementById('switch-to-register');
+  const switchToLoginLink = document.getElementById('switch-to-login');
+  const authError = document.getElementById('auth-error');
+
+  const userDashboard = document.getElementById('user-dashboard');
+  const coinsCountEl = document.getElementById('coins-count');
+  const depositBtn = document.getElementById('deposit-btn');
+  const withdrawBtn = document.getElementById('withdraw-btn');
+  const userLogoutBtn = document.getElementById('user-logout-btn');
+
+  // Wheel elements
+  const wheelCanvas = document.getElementById('wheel');
+  const spinBtn = document.getElementById('spinBtn');
+  const spinResult = document.getElementById('spin-result');
+  const ctx = wheelCanvas.getContext('2d');
+
+  // Admin dashboard
+  const adminDashboard = document.getElementById('admin-dashboard');
+  const adminLogoutBtn = document.getElementById('admin-logout-btn');
+  const usersTableBody = document.querySelector('#users-table tbody');
+  const wheelEditContainer = document.getElementById('wheel-edit-container');
+  const saveWheelBtn = document.getElementById('save-wheel-btn');
+
+  // State for wheel rotation
+  let startAngle = 0;
+  let spinTimeout = null;
+  let arc = Math.PI * 2 / wheelSegments.length;
+  let spinTime = 0;
+  let spinTimeTotal = 0;
+
+  // Show/Hide sections
+  function showAuth(showLogin) {
+    authError.style.display = 'none';
+    authSection.style.display = 'block';
+    userDashboard.classList.remove('active');
+    adminDashboard.classList.remove('active');
+    if (showLogin) {
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+      switchToLoginLink.style.display = 'none';
+      switchToRegisterLink.style.display = 'block';
+    } else {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+      switchToLoginLink.style.display = 'block';
+      switchToRegisterLink.style.display = 'none';
+    }
+  }
+  function showUserDashboard() {
+    authSection.style.display = 'none';
+    userDashboard.classList.add('active');
+    adminDashboard.classList.remove('active');
+    spinResult.textContent = '';
+  }
+  function showAdminDashboard() {
+    authSection.style.display = 'none';
+    userDashboard.classList.remove('active');
+    adminDashboard.classList.add('active');
+    populateUsersTable();
+    populateWheelEdit();
+  }
+
+  // Show error
+  function showError(msg) {
+    authError.textContent = msg;
+    authError.style.display = 'block';
+  }
+
+  // Validate phone number format (basic check)
+  function isValidPhone(phone) {
+    return /^07\d{8}$/.test(phone);
+  }
+
+  // Register handler
+  registerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    authError.style.display = 'none';
+
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
+    const username = document.getElementById('reg-username').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value.trim();
+
+    if (!email || !username || !phone || !password) {
+      showError('Please fill all fields.');
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      showError('Phone number must be 10 digits starting with 07.');
+      return;
+    }
+    // Check if user exists
+    if (loadUser(username)) {
+      showError('Username already exists.');
+      return;
+    }
+    // Save user with initial 100 coins
+    const userObj = {
+      email: email,
+      username: username,
+      phone: phone,
+      passwordHash: simpleHash(password),
+      coins: 100,
+      isAdmin: false
+    };
+    saveUser(userObj);
+    // Sync with centralized coins storage
+    syncUserCoinsWithMoneyData(userObj);
+    alert('Registration successful! Please login.');
+    // Reset and show login form
+    registerForm.reset();
+    showAuth(true);
+  });
+
+  // Login handler
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    authError.style.display = 'none';
+
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+
+    if (!username || !password) {
+      showError('Please enter username and password.');
+      return;
+    }
+    if (username === adminUser.username && password === adminUser.password) {
+      // Admin logged in
+      currentUser = {...adminUser, isAdmin: true};
+      isAdmin = true;
+      showAdminDashboard();
+      return;
+    }
+    const user = loadUser(username);
+    if (!user) {
+      showError('User not found.');
+      return;
+    }
+    if (user.passwordHash !== simpleHash(password)) {
+      showError('Incorrect password.');
+      return;
+    }
+    currentUser = user;
+    isAdmin = false;
+    showUserDashboard();
+    updateUserDashboard();
+  });
+
+  // Switch login/register links
+  switchToRegisterLink.addEventListener('click', () => {
+    showAuth(false);
+  });
+  switchToLoginLink.addEventListener('click', () => {
+    showAuth(true);
+  });
+
+  // Logout buttons
+  userLogoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    isAdmin = false;
+    showAuth(true);
+  });
+  adminLogoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    isAdmin = false;
+    showAuth(true);
+  });
+
+  // Update user dashboard coins display
+  function updateUserDashboard() {
+    if (!currentUser) return;
+    // Sync coins from centralized data storage
+    let moneyData = loadMoneyData();
+    let coinsCentral = moneyData.userCoinsTotals[currentUser.username];
+    if (coinsCentral != null && coinsCentral !== currentUser.coins) {
+      currentUser.coins = coinsCentral;
+      saveUser(currentUser);
+    }
+    coinsCountEl.textContent = currentUser.coins;
+    // Disable spin button if not enough coins
+    spinBtn.disabled = currentUser.coins < 5;
+  }
+
+  // Deposit (Top up) coins
+  depositBtn.addEventListener('click', () => {
+    if (!currentUser) return;
+    const maxDeposit = 10000;
+    let amountText = prompt(`Enter amount of coins to deposit (1 - ${maxDeposit}):\nYou will be directed to pay via M-Pesa from your registered phone number.`);
+    if (!amountText) return;
+    let amount = parseInt(amountText);
+    if (isNaN(amount) || amount < 1 || amount > maxDeposit) {
+      alert('Invalid amount entered.');
+      return;
+    }
+    // Simulate M-Pesa payment
+    alert(`Please complete your payment of ${amount} coins via M-Pesa using your registered phone number ${currentUser.phone}.\nYou will be credited once payment is confirmed.`);
+    // Simulate immediate confirmation (in real life this would be async)
+    currentUser.coins += amount;
+    saveUser(currentUser);
+    internalTransferToCentralized(currentUser, amount);
+    alert(`Your account has been credited with ${amount} coins.`);
+    updateUserDashboard();
+  });
+
+  // Withdraw coins
+  withdrawBtn.addEventListener('click', () => {
+    if (!currentUser) return;
+    let amountText = prompt(`Enter amount of coins to withdraw from your account:\nYour withdrawal will be sent to your registered phone number via M-Pesa.`);
+    if (!amountText) return;
+    let amount = parseInt(amountText);
+    if (isNaN(amount) || amount < 1) {
+      alert('Invalid amount entered.');
+      return;
+    }
+    if (currentUser.coins < amount) {
+      alert('Insufficient coins to withdraw.');
+      return;
+    }
+    // Deduct coins immediately and process withdrawal
+    currentUser.coins -= amount;
+    saveUser(currentUser);
+    internalTransferToCentralized(currentUser, -amount);
+    alert(`Withdrawal of ${amount} coins requested.\nYou will receive funds via M-Pesa to your registered phone number ${currentUser.phone}.`);
+    updateUserDashboard();
+  });
+
+  // Draw the wheel with the current wheel segments
+  function drawWheel() {
+    const radius = wheelCanvas.width / 2;
+    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+    ctx.strokeStyle = '#00c2ff';
+    ctx.lineWidth = 3;
+    ctx.font = 'bold 14px Inter';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < wheelSegments.length; i++) {
+      const angle = startAngle + i * arc;
+      ctx.fillStyle = i % 2 === 0 ? '#00c2ff' : '#016f97';
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(radius, radius, radius - 4, angle, angle + arc, false);
+      ctx.lineTo(radius, radius);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.save();
+      ctx.fillStyle = '#121212';
+      const text = wheelSegments[i].label;
+      ctx.translate(radius + Math.cos(angle + arc / 2) * (radius - 40), radius + Math.sin(angle + arc / 2) * (radius - 40));
+      ctx.rotate(angle + arc / 2 + Math.PI / 2);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  function spin() {
+    if (!currentUser || currentUser.coins < 5) {
+      alert('Not enough coins to spin. Minimum 5 coins required.');
+      return;
+    }
+    spinBtn.disabled = true;
+    spinResult.textContent = '';
+    currentUser.coins -= 5; // cost to spin
+    saveUser(currentUser);
+    internalTransferToCentralized(currentUser, -5);
+    updateUserDashboard();
+
+    spinTime = 0;
+    spinTimeTotal = Math.random() * 3 + 4 * 1000;
+
+    rotateWheel();
+  }
+
+  function rotateWheel() {
+    spinTime += 30;
+    if (spinTime >= spinTimeTotal) {
+      stopRotateWheel();
+      return;
+    }
+    const spinAngleStart = 0.3;
+    const angle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+    startAngle += angle;
+    drawWheel();
+    spinTimeout = setTimeout(rotateWheel, 30);
+  }
+
+  function stopRotateWheel() {
+    clearTimeout(spinTimeout);
+    // Calculate prize
+    const degrees = (startAngle * 180 / Math.PI) % 360;
+    const degreesNorm = degrees < 0 ? degrees + 360 : degrees;
+    const index = Math.floor((360 - degreesNorm) / (360 / wheelSegments.length)) % wheelSegments.length;
+    const prize = wheelSegments[index];
+    if (prize.coins !== 0) {
+      currentUser.coins += prize.coins;
+      saveUser(currentUser);
+      internalTransferToCentralized(currentUser, prize.coins);
+      updateUserDashboard();
+    }
+    spinResult.textContent = prize.coins >= 0 ?
+      `You won ${prize.coins} coins!` :
+      `Oops, you lost ${Math.abs(prize.coins)} coins.`;
+    spinBtn.disabled = currentUser.coins < 5;
+  }
+
+  function easeOut(t, b, c, d) {
+    t /= d;
+    t--;
+    return c * (t * t * t + 1) + b;
+  }
+
+  // Admin Functions
+
+  // Populate users table for admin to view/edit user info
+  function populateUsersTable() {
+    const users = getAllUsers();
+    usersTableBody.innerHTML = '';
+    for (let user of users) {
+      const tr = document.createElement('tr');
+      // Using inputs to allow modification
+      const emailTd = document.createElement('td');
+      const emailInput = document.createElement('input');
+      emailInput.classList.add('table-edit');
+      emailInput.type = 'email';
+      emailInput.value = user.email;
+      emailInput.disabled = user.isAdmin;
+      emailTd.appendChild(emailInput);
+      tr.appendChild(emailTd);
+
+      const usernameTd = document.createElement('td');
+      const usernameInput = document.createElement('input');
+      usernameInput.classList.add('table-edit');
+      usernameInput.type = 'text';
+      usernameInput.value = user.username;
+      usernameInput.disabled = true; // username is key, not editable
+      usernameTd.appendChild(usernameInput);
+      tr.appendChild(usernameTd);
+
+      const phoneTd = document.createElement('td');
+      const phoneInput = document.createElement('input');
+      phoneInput.classList.add('table-edit');
+      phoneInput.type = 'text';
+      phoneInput.value = user.phone;
+      phoneInput.disabled = user.isAdmin;
+      phoneTd.appendChild(phoneInput);
+      tr.appendChild(phoneTd);
+
+      const coinsTd = document.createElement('td');
+      const coinsInput = document.createElement('input');
+      coinsInput.classList.add('table-edit');
+      coinsInput.type = 'number';
+      coinsInput.value = user.coins;
+      coinsInput.min = 0;
+      coinsInput.disabled = user.isAdmin;
+      coinsTd.appendChild(coinsInput);
+      tr.appendChild(coinsTd);
+
+      const actionsTd = document.createElement('td');
+      if (!user.isAdmin) {
+        const saveBtn = document.createElement('button');
+        saveBtn.classList.add('admin-action-btn');
+        saveBtn.textContent = 'Save';
+        saveBtn.title = `Save changes for ${user.username}`;
+        saveBtn.addEventListener('click', () => {
+          // Validate inputs
+          const newEmail = emailInput.value.trim().toLowerCase();
+          const newPhone = phoneInput.value.trim();
+          const newCoins = parseInt(coinsInput.value);
+
+          if (!newEmail || !newPhone || isNaN(newCoins) || newCoins < 0) {
+            alert('Invalid input values.');
+            return;
+          }
+          if (!isValidPhone(newPhone)) {
+            alert('Phone number must be 10 digits starting with 07.');
+            return;
+          }
+          // Update user object and save
+          user.email = newEmail;
+          user.phone = newPhone;
+          user.coins = newCoins;
+          saveUser(user);
+          internalTransferToCentralized(user, 0); // sync coins
+          alert(`User "${user.username}" updated.`);
+          populateUsersTable();
+        });
+        actionsTd.appendChild(saveBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('admin-action-btn');
+        deleteBtn.style.background = '#ff3b3b';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.title = `Delete user ${user.username}`;
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Delete user "${user.username}"? This action is permanent.`)) {
+            deleteUser(user.username);
+            let moneyData = loadMoneyData();
+            if (moneyData.userCoinsTotals.hasOwnProperty(user.username)) {
+              delete moneyData.userCoinsTotals[user.username];
+              saveMoneyData(moneyData);
+            }
+            populateUsersTable();
+            alert(`User "${user.username}" deleted.`);
+          }
+        });
+        actionsTd.appendChild(deleteBtn);
+      } else {
+        actionsTd.textContent = 'Admin account';
+      }
+      tr.appendChild(actionsTd);
+      usersTableBody.appendChild(tr);
+    }
+  }
+
+  // Populate wheel segment inputs in admin dashboard
+  function populateWheelEdit() {
+    wheelEditContainer.innerHTML = '';
+    for (let i = 0; i < wheelSegments.length; i++) {
+      const seg = wheelSegments[i];
+      const labelInput = document.createElement('input');
+      labelInput.type = 'text';
+      labelInput.className = 'wheel-segment-input';
+      labelInput.value = seg.label;
+      labelInput.title = `Label for segment ${i+1}`;
+
+      const coinInput = document.createElement('input');
+      coinInput.type = 'number';
+      coinInput.className = 'wheel-segment-input';
+      coinInput.value = seg.coins;
+      coinInput.title = `Coins value for segment ${i+1}`;
+
+      // Wrap in div
+      const wrapDiv = document.createElement('div');
+      wrapDiv.style.display = 'flex';
+      wrapDiv.style.flexDirection = 'column';
+      wrapDiv.style.alignItems = 'center';
+      wrapDiv.appendChild(labelInput);
+      wrapDiv.appendChild(coinInput);
+
+      wheelEditContainer.appendChild(wrapDiv);
+    }
+  }
+  // Save wheel changes from admin inputs
+  saveWheelBtn.addEventListener('click', () => {
+    const inputs = wheelEditContainer.querySelectorAll('input');
+    const newSegments = [];
+    for (let i = 0; i < inputs.length; i += 2) {
+      const label = inputs[i].value.trim();
+      const coins = parseInt(inputs[i + 1].value);
+      if (!label) {
+        alert('Segment label cannot be empty.');
+        return;
+      }
+      if (isNaN(coins)) {
+        alert('Segment coins must be a number.');
+        return;
+      }
+      newSegments.push({ label: label, coins: coins });
+    }
+    wheelSegments = newSegments;
+    arc = Math.PI * 2 / wheelSegments.length;
+    drawWheel();
+    alert('Wheel segments updated.');
+  });
+
+  // Initial Setup
+
+  // On load, determine which view to show
+  function init() {
+    showAuth(true);
+    drawWheel();
+  }
+
+  // Spin button handler
+  spinBtn.addEventListener('click', spin);
+
+  // Run init on page load
+  window.onload = init;
+
+</script>
+</body>
+</html>
+
